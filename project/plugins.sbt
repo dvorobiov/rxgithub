@@ -1,0 +1,4 @@
+resolvers += "spray repo" at "http://repo.spray.io"
+
+
+
