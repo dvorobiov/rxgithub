@@ -8,8 +8,9 @@ class GitHubClient private (credentials: Option[AuthData] = None, actorSystemOpt
   SprayConnector {
 
   lazy val actorSystem = actorSystemOpt getOrElse ActorSystem("github-client")
-  def request(path: String) = connectorRequest(path: String)
+  def request[T](req: GithubRequest): RequestResult[T] = requestWithSpray(req)
 }
+case class Fail(code: Int, description: Option[String] = None)
 
 object GitHubClient {
   def init = new GitHubClient(None, None)
