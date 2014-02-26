@@ -1,6 +1,6 @@
 package api
 
-import client.GitHubClient
+import client.{GithubResponse, GetRequest, GitHubClient}
 import core.User
 import scala.util.Try
 
@@ -10,5 +10,5 @@ trait UserClient {
 }
 
 protected class UserApi(client: GitHubClient) {
-  def get(id: Int): Try[Option[User]] = client.request(s"/users/$id")
+  def get(id: Int): GithubResponse[User] = client.request[User](GetRequest(s"/users/$id"))
 }

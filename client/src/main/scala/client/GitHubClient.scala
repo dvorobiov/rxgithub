@@ -2,13 +2,14 @@ package client
 
 import api.UserClient
 import akka.actor.ActorSystem
+import core.User
 
 class GitHubClient private (credentials: Option[AuthData] = None, actorSystemOpt: Option[ActorSystem] = None) extends
   UserClient with
   SprayConnector {
 
   lazy val actorSystem = actorSystemOpt getOrElse ActorSystem("github-client")
-  def request[T](req: GithubRequest): RequestResult[T] = requestWithSpray(req)
+  def request[T](req: GithubRequest): GithubResponse[User] = requestWithSpray(req)
 }
 case class Fail(code: Int, description: Option[String] = None)
 

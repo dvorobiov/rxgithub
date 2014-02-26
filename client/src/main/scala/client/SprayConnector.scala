@@ -6,7 +6,6 @@ import akka.actor.ActorSystem
 import spray.client.pipelining._
 import scala.concurrent.Future
 import spray.can.Http
-import scala.util.{Failure, Success}
 import scala.concurrent.duration._
 import akka.pattern.ask
 import akka.event.Logging
@@ -16,6 +15,8 @@ import akka.util.Timeout
 import spray.httpx.LiftJsonSupport
 import net.liftweb.json.ext.JodaTimeSerializers
 import net.liftweb.json.{Formats, Serialization, NoTypeHints}
+import spray.httpx.unmarshalling.FromResponseUnmarshaller
+import core.User
 
 
 trait SprayConnector extends LiftJsonSupport {
@@ -34,35 +35,31 @@ trait SprayConnector extends LiftJsonSupport {
 //    engine
 //  }
 
-  private val pipeline: HttpRequest => Future[HttpResponse] = sendReceive ~> unmarshal[HttpResponse]
-
-
-  def requestWithSpray[T](req: GithubRequest): RequestResult[T] = {
+  def requestWithSpray(req: GithubRequest): GithubResponse[User] = {
+    val pipeline: HttpRequest => Future[User] = sendReceive ~> unmarshal[User]
     val fullpath = gitHubRootPath + req.url
     val Request = new RequestBuilder(sprayHttpMethod(req))
 
     val responseFuture = pipeline { Request(fullpath) }
-    responseFuture map {
+    responseFuture. map {
       //    case Success(GoogleApiResult(_, Elevation(_, elevation) :: _)) =>
       //      log.info("The elevation of Mt. Everest is: {} m", elevation)
       //      shutdown()
-
-      case Success(somethingUnexpected: HttpResponse) =>
-        somethingUnexpected.message.toString
-      //  shutdown()
-
-      case Failure(error) =>
-      //  shutdown()
-        "fail"
+      case item: User  =>
+        Left(Fail(1))
+      case somethingUnexpected: HttpResponse =>
+        Left(Fail(1))
+      case _ =>
+        Left(Fail(1))
     }
   }
 
   private def sprayHttpMethod(req: GithubRequest) = req match {
-    case GetRequest => HttpMethods.GET
-    case PostRequest => HttpMethods.POST
-    case PutRequest => HttpMethods.PUT
-    case PatchRequest => HttpMethods.PATCH
-    case DeleteRequest => HttpMethods.DELETE
+    case GetRequest(_) => HttpMethods.GET
+    case PostRequest(_) => HttpMethods.POST
+    case PutRequest(_) => HttpMethods.PUT
+    case PatchRequest(_) => HttpMethods.PATCH
+    case DeleteRequest(_) => HttpMethods.DELETE
   }
 
   private def shutdown(): Unit = {

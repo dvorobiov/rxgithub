@@ -1,5 +1,5 @@
 import scala.concurrent.Future
 
 package object client {
-  type RequestResult[T] = Future[Either[Fail, T]]
+  type GithubResponse[T] = Future[Either[Fail, T]]
 }
