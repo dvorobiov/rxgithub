@@ -25,6 +25,7 @@ trait SprayConnector extends LiftJsonSupport {
   implicit val timeout = 2.seconds
   implicit val liftJsonFormats: Formats = Serialization.formats(NoTypeHints) ++ JodaTimeSerializers.all
   implicit val receiveTimeout: Timeout = 2 seconds
+
   import system.dispatcher
   private val log = Logging(system, getClass)
   private val gitHubRootPath = "https://api.github.com"
@@ -35,8 +36,8 @@ trait SprayConnector extends LiftJsonSupport {
 //    engine
 //  }
 
-  def requestWithSpray(req: GithubRequest): GithubResponse[User] = {
-    val pipeline: HttpRequest => Future[User] = sendReceive ~> unmarshal[User]
+  def requestWithSpray[T: Manifest](req: GithubRequest): GithubResponse[T] = {
+    val pipeline = sendReceive ~> unmarshal[T]
     val fullpath = gitHubRootPath + req.url
     val Request = new RequestBuilder(sprayHttpMethod(req))
 
@@ -45,7 +46,7 @@ trait SprayConnector extends LiftJsonSupport {
       //    case Success(GoogleApiResult(_, Elevation(_, elevation) :: _)) =>
       //      log.info("The elevation of Mt. Everest is: {} m", elevation)
       //      shutdown()
-      case item: User  =>
+      case item: T  =>
         Left(Fail(1))
       case somethingUnexpected: HttpResponse =>
         Left(Fail(1))
