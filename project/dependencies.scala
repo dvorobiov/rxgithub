@@ -19,6 +19,7 @@ object Dependencies {
 
   val liftJson = "net.liftweb" %% "lift-json" % "2.5.1"
   val liftJsonExt = "net.liftweb" %% "lift-json-ext" % "2.5.1"
+  val sprayJson = "io.spray" %%  "spray-json" % sprayJsonVersion
   val akkaTestKit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion %  "test"
 
   val joda =  "joda-time" % "joda-time" % "2.2"
@@ -31,7 +32,7 @@ object Dependencies {
   // projects
 
   val clientDependencies =
-    Seq(akkaActor, akkaSlf4j, logbackClassic, sprayCan, sprayClient, liftJson, liftJsonExt) ++ commonDependencies
+    Seq(akkaActor, akkaSlf4j, logbackClassic, sprayCan, sprayClient, liftJson, sprayJson, liftJsonExt) ++ commonDependencies
 
   val coreDependencies =
     Seq() ++ commonDependencies

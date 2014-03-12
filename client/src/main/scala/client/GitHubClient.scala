@@ -3,13 +3,17 @@ package client
 import api.UserClient
 import akka.actor.ActorSystem
 import core.User
+import spray.httpx.unmarshalling._
+import client.AuthCrendenials
+import client.AuthToken
+import scala.Some
 
 class GitHubClient private (credentials: Option[AuthData] = None, actorSystemOpt: Option[ActorSystem] = None) extends
   UserClient with
   SprayConnector {
 
   lazy val actorSystem = actorSystemOpt getOrElse ActorSystem("github-client")
-  def request[T](req: GithubRequest) = requestWithSpray[User](req)
+  def request[T: FromResponseUnmarshaller: Manifest](req: GithubRequest) = requestViaSpray[T](req)
 }
 case class Fail(code: Int, description: Option[String] = None)
 

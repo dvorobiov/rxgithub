@@ -13,6 +13,6 @@ case class UserJson(
 )
 object UserJson {
   def toCore(u: UserJson) = {
-    User(u.login, u.id, u.avatar_url)
+    User(u.login, u.id)
   }
 }

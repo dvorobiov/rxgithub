@@ -12,32 +12,38 @@ import akka.event.Logging
 import akka.io.IO
 import spray.util._
 import akka.util.Timeout
-import spray.httpx.LiftJsonSupport
+import spray.httpx.{SprayJsonSupport, LiftJsonSupport}
 import net.liftweb.json.ext.JodaTimeSerializers
 import net.liftweb.json.{Formats, Serialization, NoTypeHints}
-import spray.httpx.unmarshalling.FromResponseUnmarshaller
+import spray.httpx.unmarshalling.{Unmarshaller, FromResponseUnmarshaller}
 import core.User
+import spray.json._
+import client.PostRequest
+import client.DeleteRequest
+import client.PutRequest
+import client.GetRequest
+import spray.http.HttpResponse
+import core.User
+import client.Fail
+import client.PatchRequest
 
 
-trait SprayConnector extends LiftJsonSupport {
+trait SprayConnector extends SprayJsonSupport {
   self: { val actorSystem: ActorSystem } =>
   implicit val system = actorSystem
   implicit val timeout = 2.seconds
-  implicit val liftJsonFormats: Formats = Serialization.formats(NoTypeHints) ++ JodaTimeSerializers.all
   implicit val receiveTimeout: Timeout = 2 seconds
 
+  import SprayJsonSupport._
   import system.dispatcher
   private val log = Logging(system, getClass)
   private val gitHubRootPath = "https://api.github.com"
 
-//  implicit val sslEngineProvider = ClientSSLEngineProvider { engine =>
-//    engine.setEnabledCipherSuites(Array("TLS_RSA_WITH_AES_256_CBC_SHA"))
-//    engine.setEnabledProtocols(Array("SSLv3", "TLSv1"))
-//    engine
-//  }
 
-  def requestWithSpray[T: Manifest](req: GithubRequest): GithubResponse[T] = {
+  def requestViaSpray[T: FromResponseUnmarshaller: Manifest](req: GithubRequest): GithubResponse[T] = {
+    
     val pipeline = sendReceive ~> unmarshal[T]
+
     val fullpath = gitHubRootPath + req.url
     val Request = new RequestBuilder(sprayHttpMethod(req))
 
