@@ -12,20 +12,10 @@ import akka.event.Logging
 import akka.io.IO
 import spray.util._
 import akka.util.Timeout
-import spray.httpx.{SprayJsonSupport, LiftJsonSupport}
-import net.liftweb.json.ext.JodaTimeSerializers
-import net.liftweb.json.{Formats, Serialization, NoTypeHints}
+import spray.httpx.{SprayJsonSupport}
+
 import spray.httpx.unmarshalling.{Unmarshaller, FromResponseUnmarshaller}
-import core.User
-import spray.json._
-import client.PostRequest
-import client.DeleteRequest
-import client.PutRequest
-import client.GetRequest
 import spray.http.HttpResponse
-import core.User
-import client.Fail
-import client.PatchRequest
 
 
 trait SprayConnector extends SprayJsonSupport {

@@ -4,8 +4,6 @@ import api.UserClient
 import akka.actor.ActorSystem
 import core.User
 import spray.httpx.unmarshalling._
-import client.AuthCrendenials
-import client.AuthToken
 import scala.Some
 
 class GitHubClient private (credentials: Option[AuthData] = None, actorSystemOpt: Option[ActorSystem] = None) extends

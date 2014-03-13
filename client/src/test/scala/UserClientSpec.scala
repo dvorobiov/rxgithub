@@ -8,6 +8,8 @@ class UserClientSpec  extends FlatSpec with ShouldMatchers {
 
   "UserClient" should "return correct User by Id" in {
     val res = client.user.get(1).await
+    val user = res.toOption.get
+    user
     //res.toOption.get. should be(false)
   }
 }
